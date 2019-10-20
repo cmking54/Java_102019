@@ -49,11 +49,62 @@ public class ThreadDemo {
     t1.join();
     t2.join();
     System.out.println("Count " + c.count);
+    //interthread
+    IntWrapper intWrapper = new IntWrapper();
+    new Producer(intWrapper);
+    new Consumer(intWrapper);
+
   }
 }
 class Counter {
   int count;
   public synchronized void increment() {
     count++;
+  }
+}
+class IntWrapper {
+  int value;
+  boolean valueSet = false;
+  synchronized void getValue() {
+    while (!valueSet) { try { wait(); } catch (Exception e) {} }
+    System.out.println("Gotten Value " + value);
+    valueSet = false;
+    notify();
+  }
+  synchronized void setValue(int value) {
+    while (valueSet) { try { wait(); } catch (Exception e) {} }
+    valueSet = true;
+    this.value = value;
+    System.out.println("Sat Value " + value);
+    notify();
+  }
+}
+class Producer implements Runnable {
+  IntWrapper intWrapper;
+  Producer(IntWrapper intWrapper) {
+    this.intWrapper = intWrapper;
+    new Thread(this, "Producer").start();
+  }
+  public void run() {
+    int i = 0;
+    while (true) {
+      intWrapper.setValue(i++);
+      try { Thread.sleep(1000);} catch (Exception e) {}
+    }
+  }
+}
+class Consumer implements Runnable {
+  IntWrapper intWrapper;
+  Producer(IntWrapper intWrapper) {
+    this.intWrapper = intWrapper;
+    new Thread(this, "Consumer").start();
+
+  }
+  public void run() {
+    int i = 0;
+    while (true) {
+      intWrapper.getValue();
+      try { Thread.sleep(1000);} catch (Exception e) {}
+    }
   }
 }
