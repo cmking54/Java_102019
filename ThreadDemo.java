@@ -30,5 +30,30 @@ public class ThreadDemo {
     t2.join();
     System.out.println(t1.isAlive());
     System.out.println("Bye");
+
+
+    // Synch
+    Counter c = new Counter();
+    t1 = new Thread(() -> {
+      for (int i = 0; i < 1000; i++) {
+        c.increment();
+      }
+    });
+    t2 = new Thread(() -> {
+      for (int i = 0; i < 1000; i++) {
+        c.increment();
+      }
+    });
+    t1.start();
+    t2.start();
+    t1.join();
+    t2.join();
+    System.out.println("Count " + c.count);
+  }
+}
+class Counter {
+  int count;
+  public synchronized void increment() {
+    count++;
   }
 }
