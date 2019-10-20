@@ -1,5 +1,5 @@
 public class ThreadDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
 
     Thread t1 = new Thread(new Runnable() {
       public void run() {
@@ -19,5 +19,10 @@ public class ThreadDemo {
 
     t1.start();
     t2.start();
+    System.out.println(t1.isAlive());
+    t1.join();
+    t2.join();
+    System.out.println(t1.isAlive());
+    System.out.println("Bye");
   }
 }
